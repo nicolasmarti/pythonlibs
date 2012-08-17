@@ -1,0 +1,6 @@
+<Lisplang.{ml,byte,native}>: pkg_pycaml
+
+<lang_intf.{ml,byte,native}>: pkg_pycaml
+<pylang.{ml,byte,native}>: pkg_pycaml
+
+<snake.{ml,byte,native}>: pkg_str, pkg_pycaml

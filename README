@@ -1,1 +1,50 @@
 Several libs for development in python
+
+in order for the paths to be ok, move into the root of the directory and execute 
+. ./set-env.sh
+
+
+
+
+here is a description of the directories/files and their dependencies
+
+ocaml/: contains a library which allow one to extends the python
+interpreter with embedded language implemented in OCaml. As an example
+we extends python with a simple interpreted lisp. [Require: ocaml, pycaml]
+
+misc/: contains several reusable libraries
+misc/googlesheet.py: provide read/write access to GoogleSpreadsheet [Require: python Google API]
+misc/gspeech.py: text-to-speech using Google service [NB: does not work anymore]
+misc/keybinding.py: allow to manage keybinding similarly to emacs
+misc/storegraph.py: a dynamic storage, with dependencies between values (reminiscent to a spreadsheet engine) [Require: NetworkX]
+
+gui/: several gui component build over GTK
+gui/evalframe.py: a GtkFrame for inputing definition or executing python statement in a storegraph
+gui/gtksheet.py: storegraph GtkFrame frontend remniscent to a simple graphical spreadsheet
+gui/storeframe.py: a GtkFrame for managing a storegraph
+gui/worldclockwindow.py: a GtkWindow which title show the current time in several world location [Require: pytz]
+gui/pg.py: a GtkFrame frontend for embedded language in the ocaml-extended interpreter
+gui/myide.py: an application which use several GtkFrame all linked by a share storegraph
+gui/myeditor.py: attempt to reproduce an emacs in python [NB: OBSOLETE]
+
+finance/misc: several general purpose libraries
+finance/misc/indicators.py: a general library for technical analysis indicators
+finance/misc/stockquote.py: simple function for grabbing last price of a stock using Google Finance
+finance/misc/strat.py: a hierarchy of classes for writing trading strategies based on the same workflow
+finance/misc/yahoojap.py: a function to grab the quotes of nikkei stock using Yahoo Japan [NB: BROKEN]
+finance/misc/yhstckcanvas.py: an example of use of matplotlib [NB: taken for matplotlib examples]
+
+
+[IMPORTANT: This is experimental work, the author is not responsible for any loss generated through the following libraries]
+[ADVICE: use a demo account]
+finance/ibbroker: a client/server framework for using InteractiveBrokers services [Require: Ibpy, pyro]
+
+finance/ibbroker/server/Server.py: a pyro object for accessing InteractiveBrokers API, adding a few functionality (e.g., orders timeout, ...)
+finance/ibbroker/server/test.py: several examples of how to the server / regression tests
+finance/ibbroker/accountframe.py: a GtkFrame displaying the account informations
+
+finance/ibbroker/contract.py: a threaded object representing a contract with several information: bars, marketdepth, position, pnl, ...
+finance/ibbroker/executionframe.py: a GtkFrame displaying the execution informations
+finance/ibbroker/portfolioframe.py: a GtkFrame displaying the global position informations
+finance/ibbroker/stockframe.py: a GtkFrame displaying real-time information of a contract
+finance/ibbroker/client.py: an application composed of all frames described above
