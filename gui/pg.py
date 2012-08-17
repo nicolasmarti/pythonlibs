@@ -66,63 +66,80 @@ class PG(gtksourceview2.View, keybinding.KeyBinding):
         # C-x C-c -> close the application
         self.keyactions.append(
             ([Set([65507, 120]), Set([65507,99])],
-             lambda s: gtk.main_quit()
+             lambda s: gtk.main_quit(),
+             "close the application"
              )
             )
 
         # C-c C-n -> proceed next
         self.keyactions.append(
             ([Set([65507, 99]), Set([65507,110])],
-             lambda s: s.proceed_definition()
+             lambda s: s.proceed_definition(),
+             "process the next definition"
              )
             )
 
         # C-c C-b -> proceed all
         self.keyactions.append(
             ([Set([65507, 99]), Set([65507,98])],
-             lambda s: s.proceed_all()
+             lambda s: s.proceed_all(),
+             "process all next definitions"
              )
             )
 
         # C-c C-d -> print defs
         self.keyactions.append(
             ([Set([65507, 99]), Set([65507,100])],
-             lambda s: s.show_defs()
+             lambda s: s.show_defs(),
+             "print processed definitions"
              )
             )
 
         # C-c C-u -> undo last definition
         self.keyactions.append(
             ([Set([65507, 99]), Set([65507,117])],
-             lambda s: s.undo()
+             lambda s: s.undo(),
+             "undo last definition"
              )
             )
 
         # C-c C-y -> undo all definitions
         self.keyactions.append(
             ([Set([65507, 99]), Set([65507,121])],
-             lambda s: s.undo_all()
+             lambda s: s.undo_all(),
+             "undo all definitions"
              )
             )
 
         # C-x C-f -> open a file
         self.keyactions.append(
             ([Set([65507, 120]), Set([65507,102])],
-             lambda s: s.openfile()
+             lambda s: s.openfile(),
+             "open a file"
              )
             )
 
         # C-x C-s -> save a file
         self.keyactions.append(
             ([Set([65507, 120]), Set([65507,115])],
-             lambda s: s.savefile()
+             lambda s: s.savefile(),
+             "open a file"
              )
             )
 
         # C-x C-k -> close a file
         self.keyactions.append(
             ([Set([65507, 120]), Set([65507,107])],
-             lambda s: s.closefile()
+             lambda s: s.closefile(),
+             "close current file"
+             )
+            )
+
+        # C-h -> show keybindings
+        self.keyactions.append(
+            ([Set([65507, 104])],
+             lambda s: error_dialog(self.get_toplevel(), self.keycomments(gtk.gdk.keyval_name)),
+             "show keybindings"
              )
             )
 
@@ -374,7 +391,7 @@ if __name__ == '__main__':
     
     win = gtk.Window()
 
-    win.add(PGFrame("Calculus"))    
+    win.add(PGFrame("Lisp"))    
 
     win.connect('destroy', lambda win: gtk.main_quit())
 
