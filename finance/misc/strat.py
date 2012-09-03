@@ -268,13 +268,16 @@ class Strat2(BackTest):
 
         index = self.store["nb bars"] - 1
 
-        # we short sell if increasing or Vshape with i <= 2
-        if self.store["data"][index]["increasing"]:# or (indexV <> None and indexV <= 2):
+        indexV = self.store["data"][index]["indexV"]
+        indexA = self.store["data"][index]["indexA"]
+        
+        # we short sell if increasing
+        if self.store["data"][index]["increasing"]:# or (indexA <> None and indexA <= 2):
             return (-100, None)
 
-        # we go long if decreasing or Ashape with i <= 2
-        if self.store["data"][index]["decreasing"]:# or (indexA <> None and indexA <= 2):
-            return (-100, None)
+        # we go long if decreasing 
+        if self.store["data"][index]["decreasing"]:# or (indexV <> None and indexV <= 2):
+            return (100, None)
 
 
         return None
