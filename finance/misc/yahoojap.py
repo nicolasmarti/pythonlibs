@@ -224,7 +224,7 @@ def buildlink(ticker, startdate, enddate, startrow):
 def get_quote_table(link):
     page = urllib2.urlopen(link).read()
     tables = re.findall('<table.*?</table>',page,re.S)
-    tables = re.findall('<table.*?</table>',tables[4][3:],re.S)
+    tables = re.findall('<table.*?</table>',tables[5][3:],re.S)
     p = TableParser()
     p.feed(tables[0])
     return p.doc[0][1:]
