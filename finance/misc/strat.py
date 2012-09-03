@@ -143,7 +143,7 @@ class Strat():
             pass
 
         # just debug output
-        if st <> self.store["state"] and True:
+        if st <> self.store["state"] and False:
             print str(st) + " --> " + str(self.store["state"])
 
         # we are recording the pnl
@@ -162,7 +162,7 @@ class BackTest(Strat):
             price = self.store["bars"][self.store["nb bars"] - 1]["ajust. close"]
         self.store["order"][self.store["nb bars"] - 1] = (size, price)
 
-        if True:
+        if False:
             print "order: " + str((size, price)) + "@ " + str(self.store["bars"][self.store["nb bars"] - 1]["date"]) + " | " + str(self.store["nb bars"] - 1) + " ==> " + str(self.pnl_upnl())
 
         if self.store["state"] == 1:
