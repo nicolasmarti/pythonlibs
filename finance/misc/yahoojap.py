@@ -198,7 +198,6 @@ def parse_yahoo_quote_page(link):
     page = urllib2.urlopen(link).read()
     tables = re.findall('<table.*?</table>',page,re.S)
     p = TableParser()
-    print tables[1]
     p.feed(tables[1])
     return parse_quote_table(p.doc[0][1:])
 

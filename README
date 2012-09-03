@@ -31,7 +31,7 @@ finance/misc: several general purpose libraries
 finance/misc/indicators.py: a general library for technical analysis indicators
 finance/misc/stockquote.py: simple function for grabbing last price of a stock using Google Finance
 finance/misc/strat.py: a hierarchy of classes for writing trading strategies based on the same workflow
-finance/misc/yahoojap.py: a function to grab the quotes of nikkei stock using Yahoo Japan [NB: BROKEN]
+finance/misc/yahoojap.py: a function to grab the quotes of nikkei stock using Yahoo Japan
 finance/misc/yhstckcanvas.py: an example of use of matplotlib [NB: taken for matplotlib examples]
 
 
