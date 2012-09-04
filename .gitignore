@@ -8,4 +8,6 @@ _build
 *.pyc
 *.bc
 *.pkl
+*.log
+*.quotes
 Pyro_NS_URI
