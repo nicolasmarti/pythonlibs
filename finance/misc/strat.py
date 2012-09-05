@@ -277,6 +277,7 @@ class Strat2(BackTest):
 
         # we go long if decreasing 
         if (indexV <> None and indexV <= 2):
+            #print "opening at " + str(self.store["nb bars"])
             return (100, None)
 
 
@@ -296,10 +297,16 @@ class Strat2(BackTest):
         # 
         #if not (self.store["data"][index]["increasing"]) and not (self.store["data"][index]["decreasing"]) and (indexA <> None and indexA >= 2) and (indexV <> None and indexV >= 2):
         #    return True
+        #if self.store["data"][index]["increasing"]:
+            #print "closing at " + str(self.store["nb bars"])
+        #    return True            
+
         if indexV <> None and indexV >= 3:
+            #print "closing at " + str(self.store["nb bars"])
             return True
 
         if indexA <> None and indexA <= 3:
+            #print "closing at " + str(self.store["nb bars"])
             return True
 
 
@@ -371,13 +378,13 @@ class Strat2(BackTest):
             if indexV <> None:
                 print "VShape (" + str(indexV) + ": " + str((lema[0:indexV], lema[indexV:len(lema)]))
 
-            if increasing:
+            if self.store["data"][index]["increasing"]:
                 print "increasing: " + str(lema)
 
-            if decreasing:
+            if self.store["data"][index]["decreasing"]:
                 print "decreasing: " + str(lema)
 
-            if indexA == None and indexV == None and decreasing and increasing :
+            if indexA == None and indexV == None and not self.store["data"][index]["increasing"] and not self.store["data"][index]["decreasing"]:
                 print "index == None in " + str(lema)
 
             print ""
@@ -394,8 +401,10 @@ if __name__ == "__main__":
     if (len(sys.argv) > 1):
         tickers = sys.argv[1:]
     else:
+
         # all tickers of nikkei
-        tickers = [2802, 2502, 2914, 2801, 2503, 2269, 2871, 2282, 2002, 2501, 2531, 3105, 3401, 3402, 3101]
+        tickers = yahoojap.get_tickers_nikkei225()
+
         tickers = map(lambda x: str(x), tickers)
 
     for ticker in tickers:
@@ -405,7 +414,7 @@ if __name__ == "__main__":
         try:
             open(ticker + ".quotes", "rb")
         except:
-            yahoojap.get_historical(ticker, date(2008,1,1), filename = ticker + ".quotes")
+            yahoojap.get_historical(ticker, date(2010,1,1), filename = ticker + ".quotes")
 
         bt.load(ticker + ".quotes")
 
@@ -415,6 +424,6 @@ if __name__ == "__main__":
     
         bt.store.save(open(ticker + ".log", "wb"))
 
-        print str(bt.store["final pnl"]) + "\n"
+        print str(bt.store["final pnl"])
 
 
