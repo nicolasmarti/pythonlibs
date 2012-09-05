@@ -480,7 +480,7 @@ if __name__ == "__main__":
         print str(bt.store["final pnl"])
 
         fig = bt.draw()
-        fig.savefig(ticker + ".png", dpi=1000)
+        fig.savefig(ticker + ".png")
         del fig
         #fig.show()
         #raw_input()
