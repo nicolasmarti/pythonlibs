@@ -10,6 +10,7 @@ import sys
 import time
 
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as font_manager
 
 class Strat():
 
@@ -167,6 +168,9 @@ class Strat():
 
         # we are recording the pnl
         self.store["pnl"][self.store["nb bars"] - 1] = self.pnl_upnl()
+        
+        #print str(self.store["pnl"][self.store["nb bars"] - 1])
+
 
 # a first derivation: a backtest with pickled data
 class BackTest(Strat):
@@ -328,11 +332,11 @@ class Strat2(BackTest):
             #print "closing at " + str(self.store["nb bars"])
             return True
 
-        lema = self.store["data"][index]["lema"]
+        #lema = self.store["data"][index]["lema"]
 
-        if is_increasing(lema[0:3]):
+        #if is_increasing(lema[0:2]):
             #print "closing at " + str(self.store["nb bars"])
-            return True
+        #    return True
 
 
         return None
@@ -431,7 +435,8 @@ class Strat2(BackTest):
             l = map (lambda x: self.store["ema"][i]["value"][x], range(0, self.store["nb bars"]))
             ax.plot(range(0, self.store["nb bars"]), l, label='ema ' + str(i))
         
-        ax.legend(loc='lower center', shadow=True, fancybox=True)
+        props = font_manager.FontProperties(size=10)
+        ax.legend(loc='best', shadow=True, fancybox=True, prop=props)
 
         ax2 = ax.twinx()
         l = map (lambda x: self.store["pnl"][x][3], range(0, self.store["nb bars"]))
@@ -476,6 +481,7 @@ if __name__ == "__main__":
 
         fig = bt.draw()
         fig.savefig(ticker + ".png", dpi=1000)
+        del fig
         #fig.show()
         #raw_input()
 
