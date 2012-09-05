@@ -11,4 +11,5 @@ _build
 *.log
 *.quotes
 *.png
+*.svg
 Pyro_NS_URI

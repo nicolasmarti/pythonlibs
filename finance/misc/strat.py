@@ -7,6 +7,7 @@ from pickle import *
 
 import yahoojap
 import sys
+import time
 
 import matplotlib.pyplot as plt
 
@@ -327,6 +328,12 @@ class Strat2(BackTest):
             #print "closing at " + str(self.store["nb bars"])
             return True
 
+        lema = self.store["data"][index]["lema"]
+
+        if is_increasing(lema[0:3]):
+            #print "closing at " + str(self.store["nb bars"])
+            return True
+
 
         return None
 
@@ -412,6 +419,25 @@ class Strat2(BackTest):
 
         return None
 
+    # draw stock price / pnl
+    def draw(self):
+        
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        l = map (lambda x: self.store["bars"][x]["ajust. close"], range(0, self.store["nb bars"]))
+        ax.plot(range(0, self.store["nb bars"]), l, label='spot')
+
+        for i in range(0, self.store["nbema"]):
+            l = map (lambda x: self.store["ema"][i]["value"][x], range(0, self.store["nb bars"]))
+            ax.plot(range(0, self.store["nb bars"]), l, label='ema ' + str(i))
+        
+        ax.legend(loc='lower center', shadow=True, fancybox=True)
+
+        ax2 = ax.twinx()
+        l = map (lambda x: self.store["pnl"][x][3], range(0, self.store["nb bars"]))
+        ax2.plot(range(0, self.store["nb bars"]), l, label='pnl')
+        return fig
+
 
 if __name__ == "__main__":
     
@@ -449,6 +475,8 @@ if __name__ == "__main__":
         print str(bt.store["final pnl"])
 
         fig = bt.draw()
-        fig.savefig(ticker + ".png")
+        fig.savefig(ticker + ".png", dpi=1000)
+        #fig.show()
+        #raw_input()
 
     print "tot_pnl = " + str(tot_pnl)
