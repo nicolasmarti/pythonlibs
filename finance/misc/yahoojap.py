@@ -251,7 +251,26 @@ def get_historical(ticker, startdate, enddate = date.today(), filename = None):
 
     return res
 
-if __name__ == '__main__':
-    for i in get_historical("8604", date(2008, 1, 1)):
-        print i
+# this is ugly code ...
+def get_tickers_nikkei225():
+    opener = urllib2.build_opener()
+    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+    infile = opener.open('http://en.wikipedia.org/w/index.php?title=Nikkei_225&printable=yes')
+    page = infile.read()
+    tickers = re.findall('">[0-9]+?</a>',page,re.S)
+    l = []
+    for i in tickers:
+        if len(i) == 10: 
+            l.append(int(i[2:6]))
+    #print len(l)
+        
+    return l
+    
 
+
+
+if __name__ == '__main__':
+    #for i in get_historical("8604", date(2008, 1, 1)):
+    #    print i
+    get_tickers_nikkei225()
+    
