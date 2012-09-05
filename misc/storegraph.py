@@ -429,6 +429,8 @@ class LogStore:
 
         self.key = key
 
+        self.G = self.store.G
+
     def __setitem__(self, key, item):
         #self.used.add(key)
         self.store[key] = item
