@@ -461,23 +461,26 @@ if __name__ == "__main__":
     for ticker in tickers:
 
         bt = Strat2()
+
+        print "ticker = " + str(ticker)
         
         try:
             open(ticker + ".quotes", "rb")
         except:
+            print "downloading quotes ..."
             yahoojap.get_historical(ticker, date(2010,1,1), filename = ticker + ".quotes")
 
         bt.load(ticker + ".quotes")
 
-        print ticker
-
+        print "running backtest ..."
         bt.run()
     
         bt.store.save(open(ticker + ".log", "wb"))
 
-        tot_pnl += bt.store["final pnl"][3]
-
-        print str(bt.store["final pnl"])
+        pnl = bt.store["final pnl"]
+        tot_pnl += pnl[3]
+        print "pnl = " + str(pnl[0]) + ", unrealized pnl = " + str(pnl[2]) + ", total pnl = "  + str(pnl[3]) + "\n"
+        
 
         fig = bt.draw()
         fig.savefig(ticker + ".png")
@@ -485,4 +488,4 @@ if __name__ == "__main__":
         #fig.show()
         #raw_input()
 
-    print "tot_pnl = " + str(tot_pnl)
+    print "total pnl = " + str(tot_pnl)
