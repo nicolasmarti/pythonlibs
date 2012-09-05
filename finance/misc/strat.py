@@ -8,6 +8,8 @@ from pickle import *
 import yahoojap
 import sys
 
+import matplotlib.pyplot as plt
+
 class Strat():
 
     def __init__(self):
@@ -76,6 +78,22 @@ class Strat():
         upnl2 = upnl * self.store["bars"][self.store["nb bars"] - 1]["ajust. close"]
 
         return (pnl, upnl, upnl2, pnl + upnl2)
+
+
+    #######################################################
+    
+    # draw stock price / pnl
+    def draw(self):
+        
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        l = map (lambda x: self.store["bars"][x]["ajust. close"], range(0, self.store["nb bars"]))
+        ax.plot(range(0, self.store["nb bars"]), l)
+        ax2 = ax.twinx()
+        l = map (lambda x: self.store["pnl"][x][3], range(0, self.store["nb bars"]))
+        ax2.plot(range(0, self.store["nb bars"]), l)
+        return fig
+
 
 
     #######################################################
@@ -429,5 +447,8 @@ if __name__ == "__main__":
         tot_pnl += bt.store["final pnl"][3]
 
         print str(bt.store["final pnl"])
+
+        fig = bt.draw()
+        fig.savefig(ticker + ".png")
 
     print "tot_pnl = " + str(tot_pnl)

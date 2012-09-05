@@ -10,4 +10,5 @@ _build
 *.pkl
 *.log
 *.quotes
+*.png
 Pyro_NS_URI
