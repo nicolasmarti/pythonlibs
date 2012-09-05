@@ -407,6 +407,8 @@ if __name__ == "__main__":
 
         tickers = map(lambda x: str(x), tickers)
 
+    tot_pnl = 0
+
     for ticker in tickers:
 
         bt = Strat2()
@@ -424,6 +426,8 @@ if __name__ == "__main__":
     
         bt.store.save(open(ticker + ".log", "wb"))
 
+        tot_pnl += bt.store["final pnl"][3]
+
         print str(bt.store["final pnl"])
 
-
+    print "tot_pnl = " + str(tot_pnl)
