@@ -44,7 +44,7 @@ class Strat():
         self.store[self.name]["closingtimeout"] = None
 
         # the number of bar so far
-        self.store[self.name]["nb bars"] = 0
+        self.store[self.name]["nb_bars"] = 0
 
     #######################################################
     # the function of the strategy 
@@ -89,7 +89,7 @@ class Strat():
             upnl += order[0]
 
         #self.store.show_graph()
-        upnl2 = upnl * self.store[self.name]["bars"][self.store[self.name]["nb bars"] - 1]["ajust. close"]
+        upnl2 = upnl * self.store[self.name]["bars"][self.store[self.name]["nb_bars"] - 1]["ajust. close"]
 
         return (pnl, upnl, upnl2, pnl + upnl2)
 
@@ -101,11 +101,11 @@ class Strat():
         
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        l = map (lambda x: self.store[self.name]["bars"][x]["ajust. close"], range(0, self.store[self.name]["nb bars"]))
-        ax.plot(range(0, self.store[self.name]["nb bars"]), l)
+        l = map (lambda x: self.store[self.name]["bars"][x]["ajust. close"], range(0, self.store[self.name]["nb_bars"]))
+        ax.plot(range(0, self.store[self.name]["nb_bars"]), l)
         ax2 = ax.twinx()
-        l = map (lambda x: self.store[self.name]["pnl"][x][3], range(0, self.store[self.name]["nb bars"]))
-        ax2.plot(range(0, self.store[self.name]["nb bars"]), l)
+        l = map (lambda x: self.store[self.name]["pnl"][x][3], range(0, self.store[self.name]["nb_bars"]))
+        ax2.plot(range(0, self.store[self.name]["nb_bars"]), l)
         return fig
 
 
@@ -129,7 +129,7 @@ class Strat():
             if entry_sig <> None:
                 # we are now in opening state
                 self.store[self.name]["state"] = 1
-                self.store[self.name]["openingtime"] = self.store[self.name]["nb bars"]
+                self.store[self.name]["openingtime"] = self.store[self.name]["nb_bars"]
                 # we create the order
                 self.order(entry_sig[0], entry_sig[1])
 
@@ -139,7 +139,7 @@ class Strat():
         if self.store[self.name]["state"] == 1:
             # if we have a time out, we check it does not expire
             if self.store[self.name]["openingtimeout"] <> None:
-                if self.store[self.name]["openingtimeout"] + self.store[self.name]["openingtime"] < self.store[self.name]["nb bars"]:
+                if self.store[self.name]["openingtimeout"] + self.store[self.name]["openingtime"] < self.store[self.name]["nb_bars"]:
                     # put ourselves in cancelling opening state and cancel the order
                     self.store[self.name]["state"] = 2
                     self.cancel()
@@ -165,7 +165,7 @@ class Strat():
         if self.store[self.name]["state"] == 4:
             # if we have a time out, we check it does not expire
             if self.store[self.name]["closingtimeout"] <> None:
-                if self.store[self.name]["closingtimeout"] + self.store[self.name]["closingtime"] < self.store[self.name]["nb bars"]:
+                if self.store[self.name]["closingtimeout"] + self.store[self.name]["closingtime"] < self.store[self.name]["nb_bars"]:
                     # put ourselves in cancelling closing state and cancel the order
                     self.store[self.name]["state"] = 5
                     self.cancel()
@@ -179,9 +179,9 @@ class Strat():
             print str(st) + " --> " + str(self.store[self.name]["state"])
 
         # we are recording the pnl
-        self.store[self.name]["pnl"][self.store[self.name]["nb bars"] - 1] = self.pnl_upnl()
+        self.store[self.name]["pnl"][self.store[self.name]["nb_bars"] - 1] = self.pnl_upnl()
         
-        #print str(self.store["pnl"][self.store["nb bars"] - 1])
+        #print str(self.store["pnl"][self.store["nb_bars"] - 1])
 
 
 # a first derivation: a backtest with pickled data
@@ -194,11 +194,11 @@ class BackTest(Strat):
     # the order function
     def order(self, size, price):
         if price == None:
-            price = self.store[self.name]["bars"][self.store[self.name]["nb bars"] - 1]["ajust. close"]
-        self.store[self.name]["order"][self.store[self.name]["nb bars"] - 1] = (size, price)
+            price = self.store[self.name]["bars"][self.store[self.name]["nb_bars"] - 1]["ajust. close"]
+        self.store[self.name]["order"][self.store[self.name]["nb_bars"] - 1] = (size, price)
 
         if False:
-            print "order: " + str((size, price)) + "@ " + str(self.store[self.name]["bars"][self.store[self.name]["nb bars"] - 1]["date"]) + " | " + str(self.store[self.name]["nb bars"] - 1) + " ==> " + str(self.pnl_upnl())
+            print "order: " + str((size, price)) + "@ " + str(self.store[self.name]["bars"][self.store[self.name]["nb_bars"] - 1]["date"]) + " | " + str(self.store[self.name]["nb_bars"] - 1) + " ==> " + str(self.pnl_upnl())
 
         if self.store[self.name]["state"] == 1:
             self.store[self.name]["state"] = 3
@@ -225,10 +225,10 @@ class BackTest(Strat):
             #print i
 
             # add the bar
-            self.store[self.name]["bars"][self.store[self.name]["nb bars"]] = i
+            self.store[self.name]["bars"][self.store[self.name]["nb_bars"]] = i
 
             # increment the number of bar
-            self.store[self.name]["nb bars"] += 1
+            self.store[self.name]["nb_bars"] += 1
 
             # call the step
             self.step()
@@ -298,10 +298,10 @@ class Strat2(BackTest):
 
     def entry(self):
 
-        if self.store[self.name]["nb bars"] < self.store[self.name]["ema"][self.store[self.name]["nbema"] - 1]["period"]:
+        if self.store[self.name]["nb_bars"] < self.store[self.name]["ema"][self.store[self.name]["nbema"] - 1]["period"]:
             return None
 
-        index = self.store[self.name]["nb bars"] - 1
+        index = self.store[self.name]["nb_bars"] - 1
 
         indexV = self.store[self.name]["data"][index]["indexV"]
         indexA = self.store[self.name]["data"][index]["indexA"]
@@ -316,10 +316,10 @@ class Strat2(BackTest):
     # return a price
     def exit(self):
 
-        if self.store[self.name]["nb bars"] < self.store[self.name]["ema"][self.store[self.name]["nbema"] - 1]["period"]:
+        if self.store[self.name]["nb_bars"] < self.store[self.name]["ema"][self.store[self.name]["nbema"] - 1]["period"]:
             return None
 
-        index = self.store[self.name]["nb bars"] - 1
+        index = self.store[self.name]["nb_bars"] - 1
 
         indexV = self.store[self.name]["data"][index]["indexV"]
         indexA = self.store[self.name]["data"][index]["indexA"]
@@ -337,7 +337,7 @@ class Strat2(BackTest):
     # 
     # the update function
     def update(self):
-        index = self.store[self.name]["nb bars"] - 1
+        index = self.store[self.name]["nb_bars"] - 1
         price = self.store[self.name]["bars"][index]["ajust. close"]
 
         for i in range(0, self.store[self.name]["nbema"]):
@@ -354,12 +354,12 @@ class Strat2(BackTest):
 
         self.store[self.name]["data"][index]["lema"] = []
 
-        if self.store[self.name]["nb bars"] < self.store[self.name]["ema"][self.store[self.name]["nbema"] - 1]["period"]:            
+        if self.store[self.name]["nb_bars"] < self.store[self.name]["ema"][self.store[self.name]["nbema"] - 1]["period"]:            
             return None
 
         lema = []
         for i in range(0, self.store[self.name]["nbema"]):
-            lema.append(self.store[self.name]["ema"][i]["value"][self.store[self.name]["nb bars"] - 1])
+            lema.append(self.store[self.name]["ema"][i]["value"][self.store[self.name]["nb_bars"] - 1])
 
         self.store[self.name]["data"][index]["lema"] = lema
 
@@ -420,19 +420,19 @@ class Strat2(BackTest):
         
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        l = map (lambda x: self.store[self.name]["bars"][x]["ajust. close"], range(0, self.store[self.name]["nb bars"]))
-        ax.plot(range(0, self.store[self.name]["nb bars"]), l, label='spot')
+        l = map (lambda x: self.store[self.name]["bars"][x]["ajust. close"], range(0, self.store[self.name]["nb_bars"]))
+        ax.plot(range(0, self.store[self.name]["nb_bars"]), l, label='spot')
 
         for i in range(0, self.store[self.name]["nbema"]):
-            l = map (lambda x: self.store[self.name]["ema"][i]["value"][x], range(0, self.store[self.name]["nb bars"]))
-            ax.plot(range(0, self.store[self.name]["nb bars"]), l, label='ema ' + str(i))
+            l = map (lambda x: self.store[self.name]["ema"][i]["value"][x], range(0, self.store[self.name]["nb_bars"]))
+            ax.plot(range(0, self.store[self.name]["nb_bars"]), l, label='ema ' + str(i))
         
         props = font_manager.FontProperties(size=10)
         ax.legend(loc='best', shadow=True, fancybox=True, prop=props)
 
         ax2 = ax.twinx()
-        l = map (lambda x: self.store[self.name]["pnl"][x][3], range(0, self.store[self.name]["nb bars"]))
-        ax2.plot(range(0, self.store[self.name]["nb bars"]), l, label='pnl')
+        l = map (lambda x: self.store[self.name]["pnl"][x][3], range(0, self.store[self.name]["nb_bars"]))
+        ax2.plot(range(0, self.store[self.name]["nb_bars"]), l, label='pnl')
         return fig
 
 
