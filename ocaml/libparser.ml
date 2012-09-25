@@ -1157,7 +1157,7 @@ let stream_of_string s =
 let eos (pb: parserbuffer) : unit =
   try
     Stream.empty pb.inputstream;
-    if (pb.beginpointer < Buffer.length pb.bufferstr) then raise (Strean.Failure)
+    if (pb.beginpointer < Buffer.length pb.bufferstr) then raise (Stream.Failure)
   with
     | Stream.Failure -> raise NoMatch
 
