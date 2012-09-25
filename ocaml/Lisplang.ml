@@ -32,11 +32,25 @@ module L = struct
   let eq_value v1 v2 = Lisp.eq v1 v2
 
   (* marshalling from/to python*)
-  let marshal_to_python v = 
+  let rec marshal_to_python v = 
     match v with
       | Lisp.String s -> Some (string_to_py s)
       | Lisp.Int i -> Some (int_to_py i)
       | Lisp.Float f -> Some (float_to_py f)
+      | Lisp.List l -> (
+	let l' = List.fold_right (fun hd acc ->
+	  match acc with 
+	    | None -> None
+	    | Some l' ->
+	      match marshal_to_python hd with
+		| None -> None
+		| Some hd -> Some (hd::l')
+	) l (Some []) in
+	match l' with
+	  | None -> None
+	  | Some l' ->
+	    Some (pylist_fromarray (Array.of_list l'))
+      )
       | _ -> None
 
 
@@ -59,11 +73,25 @@ module L = struct
   | AnyType
   
   *)
-  let marshal_from_python o = 
+  let rec marshal_from_python o = 
     match pytype o with
       | StringType -> Some (Lisp.String (py_to_string o))
       | IntType -> Some (Lisp.Int (py_to_int o))
       | FloatType -> Some (Lisp.Float (py_to_float o))
+      | ListType -> (
+	let a = Array.fold_right (fun hd acc ->
+	  match acc with
+	    | None -> None
+	    | Some acc ->
+	      match marshal_from_python hd with
+		| None -> None
+		| Some hd ->
+		  Some (hd::acc)
+	) (pylist_toarray o) (Some []) in
+	match a with
+	  | None -> None
+	  | Some l -> Some (Lisp.Quote (Lisp.List l))
+      )
       | _ -> None
 
   (* application *)
