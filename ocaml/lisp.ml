@@ -1327,7 +1327,7 @@ let rec parse_expr ?(verbose: bool = false) : expr parsingrule =
       let () = (orrule parse_comment whitespaces) pb in 
       let e, (startp, endp) = with_pos (fun pb ->
 	let () = word "\'" pb in	
-	let e = parse_expr pb in
+	let e = (parse_expr ~verbose:verbose) pb in
 	e
       ) pb in
       let () = (orrule parse_comment whitespaces) pb in 
@@ -1336,7 +1336,7 @@ let rec parse_expr ?(verbose: bool = false) : expr parsingrule =
       let () = (orrule parse_comment whitespaces) pb in 
       let l, (startp, endp) = with_pos (fun pb ->
 	let () = word "(" pb in
-	let l = many parse_expr pb in
+	let l = many (parse_expr ~verbose:verbose) pb in
 	let () = word ")" pb in
 	l
       ) pb in
