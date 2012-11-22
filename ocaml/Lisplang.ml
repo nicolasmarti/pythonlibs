@@ -90,7 +90,7 @@ module L = struct
 	) (pylist_toarray o) (Some []) in
 	match a with
 	  | None -> None
-	  | Some l -> Some (Lisp.Quote (Lisp.List l))
+	  | Some l -> Some (Lisp.Quoted (Lisp.List l))
       )
       | _ -> None
 
