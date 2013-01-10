@@ -114,7 +114,7 @@ class EvalFrame(gtk.Frame, Thread, keybinding.KeyBinding):
             self.columns[i].add_attribute(self.cells[i], 'text', i)
 
         self.sw.add(self.treeview)
-        self.table.attach(self.sw, 10, 16, 0, 12)
+        self.table.attach(self.sw, 10, 16, 5, 12)
         self.sw.show()
         self.treeview.show()
 
