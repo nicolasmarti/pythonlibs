@@ -11,6 +11,8 @@ from sets import *
 import gtksourceview2
 import pango
 
+import sys
+
 import storegraph
 
 class EvalFrame(gtk.Frame, Thread, keybinding.KeyBinding):
@@ -27,13 +29,14 @@ class EvalFrame(gtk.Frame, Thread, keybinding.KeyBinding):
         #add an entry 
         self.entry = gtk.Entry()
         self.entry.set_can_focus(True)
-        self.table.attach(self.entry, 0, 10, 0, 1)
+        self.table.attach(self.entry, 0, 2, 0, 1)
 
         # build scrolled window and textview
         self.lm = gtksourceview2.LanguageManager()
         self.textbuffer = gtksourceview2.Buffer()
         self.textbuffer.set_data('languages-manager', self.lm)
         self.textview = gtksourceview2.View(self.textbuffer)
+        self.textview.set_show_line_numbers(True)
 
         self.textbuffer.set_highlight_matching_brackets(True)
 
@@ -49,6 +52,26 @@ class EvalFrame(gtk.Frame, Thread, keybinding.KeyBinding):
         self.textview.show()
         self.table.attach(self.sw, 0, 10, 1, 8)
 
+        # add an entry for expressions
+        self.textbuffer3 = gtksourceview2.Buffer()
+        self.textbuffer3.set_data('languages-manager', self.lm)
+        self.textview3 = gtksourceview2.View(self.textbuffer3)
+
+        self.sw3 = gtk.ScrolledWindow()
+        self.sw3.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.sw3.add(self.textview3)
+        self.sw3.show()
+        self.textview3.show()
+        self.table.attach(self.sw3, 2, 10, 0, 1)
+
+        self.path = "code.py"
+        try:
+            txt = open(self.path).read()
+            self.textbuffer.set_text(txt)
+        except:
+            None
+                
+
         # build the result textview
         self.sw2 = gtk.ScrolledWindow()
         self.sw2.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
@@ -60,21 +83,7 @@ class EvalFrame(gtk.Frame, Thread, keybinding.KeyBinding):
         self.sw2.show()
         self.table.attach(self.sw2, 0, 10, 8, 12)
 
-        # the button
-        #self.button = gtk.Button(label="execute(C-c C-c)")
-        #self.button.show()
-        #self.table.attach(self.button, 3, 6, 8, 9)
-        #self.button.connect("clicked", self.myexec, None)
-
-        #self.button = gtk.Button(label="eval(C-c C-n)")
-        #self.button.show()
-        #self.table.attach(self.button, 0, 3, 8, 9)
-        #self.button.connect("clicked", self.myeval, None)
-
-        #self.button = gtk.Button(label="???")
-        #self.button.show()
-        #self.table.attach(self.button, 6, 10, 8, 9)
-
+        #for locals
         if _locals == None:
             self.m_locals = locals()
         else:
@@ -119,7 +128,7 @@ class EvalFrame(gtk.Frame, Thread, keybinding.KeyBinding):
 
         self.vars = []
 
-        for i in [self.textview, self.entry]:
+        for i in [self.textview3, self.textview, self.entry]:
             i.connect("key_press_event", self.key_pressed, None)
             i.connect("key_release_event", self.key_released, None)
 
@@ -159,14 +168,6 @@ class EvalFrame(gtk.Frame, Thread, keybinding.KeyBinding):
              )
             )
 
-        # C-c C-d -> focus the entry
-        self.keyactions.append(
-            ([Set([65507, 99]), Set([65507,100])],
-             lambda s: self.entry.grab_focus(),
-             "focus the entry"
-             )
-            )
-
         # C-k -> clear buffer and entry
         self.keyactions.append(
             ([Set([65507, 107])],
@@ -183,20 +184,6 @@ class EvalFrame(gtk.Frame, Thread, keybinding.KeyBinding):
              )
             )
 
-        # C-x C-f -> open a file
-        self.keyactions.append(
-            ([Set([65507, 120]), Set([65507,102])],
-             lambda s: s.openfile()
-             )
-            )
-
-        # C-x C-s -> save a file
-        self.keyactions.append(
-            ([Set([65507, 120]), Set([65507,115])],
-             lambda s: s.savefile()
-             )
-            )
-
         # C-d -> remove a var
         self.keyactions.append(
             ([Set([65507, 100])],
@@ -205,40 +192,7 @@ class EvalFrame(gtk.Frame, Thread, keybinding.KeyBinding):
              )
             )
 
-        # this is a historic of the commands and names
-        self.hist = []
-        # this is an historic of the formula
-        self.histf = []
-        # and a pointer
-        self.histn = None
-        # and a buffer for the current command
-        self.savedcmd = None
-        self.savedvar = None
-
-        # C-up -> get the previous command
-        self.keyactions.append(
-            ([Set([65507, 65362])],
-             lambda s: self.hist_previous(),
-             "get previous command"
-             )
-            )
-
-        # C-down -> get the next command
-        self.keyactions.append(
-            ([Set([65507, 65364])],
-             lambda s: self.hist_next(),
-             "get next command"
-             )
-            )
-
         self.get_settings().set_property("gtk-error-bell", False)
-
-        # add the new print function
-        #self.m_locals["mprint"] = self.myprint
-
-    # a special print for here
-    def myprint(self, s):
-        self.textbuffer2.set_text(str(s) + "\n")
 
     def clear_buffers(self):
         self.textbuffer2.set_text("")  
@@ -303,25 +257,19 @@ class EvalFrame(gtk.Frame, Thread, keybinding.KeyBinding):
 
     def myexec(self, data=None):
 
-        self.hist.append((self.entry.get_text(), self.textbuffer.get_text(self.textbuffer.get_start_iter(), self.textbuffer.get_end_iter())))
-        self.histn = None
-
-        if self.entry.get_text() <> "":
-            m_str = self.entry.get_text() + " = \"=" + self.textbuffer.get_text(self.textbuffer.get_start_iter(), self.textbuffer.get_end_iter()).replace("\n", "\\\n").replace("\"","\\\"") + "\""
-            self.vars.append(self.entry.get_text())
-
-        else:
-            m_str = self.textbuffer.get_text(self.textbuffer.get_start_iter(), self.textbuffer.get_end_iter())
-
-        self.histf.append(m_str)
+        #m_str = self.textbuffer.get_text(self.textbuffer.get_start_iter(), self.textbuffer.get_end_iter())
 
         try:
-            #exec m_str in globals(), self.m_locals
-            self.m_locals.store_exec(m_str)
-            #self.textbuffer2.set_text("")        
-            self.m_start = self.textbuffer.get_end_iter()
-            self.textbuffer.set_text("")
-            self.entry.set_text("")
+            self.path = "code.py"
+            try:
+                open(self.path, "w").write(self.textbuffer.get_text(self.textbuffer.get_start_iter(), self.textbuffer.get_end_iter()))                
+            except:
+                None
+            if "code" in sys.modules:
+                reload(sys.modules["code"])
+            self.m_locals.store_exec("from code import *")
+            self.textbuffer2.set_text("") 
+
         except BaseException as e:
             if self.entry.get_text() <> "":
                 self.vars.remove(self.entry.get_text())
@@ -332,20 +280,40 @@ class EvalFrame(gtk.Frame, Thread, keybinding.KeyBinding):
         self.textview.grab_focus()
 
     def myeval(self, data=None):
-        self.hist.append(("", self.textbuffer.get_text(self.textbuffer.get_start_iter(), self.textbuffer.get_end_iter())))
-        self.histn = None
 
-        m_str = self.textbuffer.get_text(self.textbuffer.get_start_iter(), self.textbuffer.get_end_iter()).replace("\n", "\\\n")
-        try:
-            res = self.m_locals.store_eval(m_str)
-            self.textbuffer2.set_text(str(res))        
-            self.m_start = self.textbuffer.get_end_iter()
-            self.textbuffer.set_text("")
+        if self.entry.get_text() <> "":
+            # here we do an execution
+            
+            m_str = self.entry.get_text() + " = \"=" + self.textbuffer3.get_text(self.textbuffer3.get_start_iter(), self.textbuffer3.get_end_iter()).replace("\n", "\\\n").replace("\"","\\\"") + "\""
+            self.vars.append(self.entry.get_text())
 
-        except BaseException as e:
-            self.textbuffer2.set_text(str(e))        
+            try:
+                self.m_locals.store_exec(m_str)
+                self.textbuffer2.set_text("") 
+                self.textbuffer3.set_text("") 
+                self.entry.set_text("") 
 
-            self.textview.grab_focus()
+            except BaseException as e:
+                if self.entry.get_text() <> "":
+                    self.vars.remove(self.entry.get_text())
+                self.textbuffer2.set_text(str(e))        
+                raise e
+
+
+        else:
+
+
+            m_str = self.textbuffer3.get_text(self.textbuffer3.get_start_iter(), self.textbuffer3.get_end_iter()).replace("\n", "\\\n")
+            try:
+                res = self.m_locals.store_eval(m_str)
+                self.textbuffer2.set_text(str(res))        
+                self.textbuffer3.set_text("")
+
+            except BaseException as e:
+                self.textbuffer2.set_text(str(e))        
+                raise e
+    
+            self.textview3.grab_focus()
 
 
 
@@ -354,102 +322,7 @@ class EvalFrame(gtk.Frame, Thread, keybinding.KeyBinding):
         #print "path: " + str(path) + " :: " + str(type(path))
         #print "viewcolumn: " + str(viewcolumn) + " :: " + str(type(viewcolumn))
         #print "data: " + str(data) + " :: " + str(type(data))
-
-        piter = treeview.get_model().get_iter(path)
-        varname = str(treeview.get_model().get_value(piter, 0))
-        self.textbuffer.insert(self.textbuffer.get_end_iter(), varname)
-        self.textview.grab_focus()
-
-    def hist_previous(self):
-
-        # first time we look for the historic, or if the pointer is on the length of the hist, we need to save the current command
-        if self.histn == None or self.histn == len(self.hist):
-            self.savedcmd = self.textbuffer.get_text(self.textbuffer.get_start_iter(), self.textbuffer.get_end_iter())
-            self.savedvar = self.entry.get_text()
-
-        # first set up the pointer
-        if self.histn == None:
-            self.histn = len(self.hist) - 1
-        else:
-            self.histn -= 1
-
-        # make sure we are at least at 0
-        if self.histn < 0:
-            self.histn = 0
-
-        # and make sure it points to something
-        if self.histn >= len(self.hist):
-            self.histn = None
-            return
-
-
-        # change the current value of the buffer with the historical command
-        self.textbuffer.set_text(self.hist[self.histn][1])
-        self.entry.set_text(self.hist[self.histn][0])
         return
-        
-    def hist_next(self):
-        # if the pointer is not set, do nothing
-        if self.histn == None: return
-
-        # else update it
-        self.histn += 1
-
-        # if it is gt to the length of the historic, then we assign to the length, and show the current command
-        if self.histn >= len(self.hist): 
-            self.histn = len(self.hist)
-            self.textbuffer.set_text(self.savedcmd)
-            self.entry.set_text(self.savedvar)
-        else:
-            self.textbuffer.set_text(self.hist[self.histn][1])
-            self.entry.set_text(self.hist[self.histn][1])
-        
-        return
-
-    # open file
-    def openfile(self):
-        self.filew = gtk.FileSelection("File selection")
-    
-        def close(w):
-            self.filew.hide()
-
-        def fileok(w):
-            self.filew.hide()   
-            path = self.filew.get_filename()
-            try:
-                txt = open(path).read()
-            except:
-                return False
-
-            self.textbuffer.set_text(txt)
-
-            return True           
-            
-        self.filew.connect("destroy", close)
-        self.filew.ok_button.connect("clicked", fileok)
-
-        self.filew.show()
-
-    def savefile(self):
-        self.filew = gtk.FileSelection("File selection")
-    
-        def close(w):
-            self.filew.hide()
-
-        def fileok(w):            
-            self.filew.hide()   
-
-            f = open(self.filew.get_filename(), 'wb')
-
-            for i in self.histf:
-                f.write(i + "\n")               
-
-            return True           
-            
-        self.filew.connect("destroy", close)
-        self.filew.ok_button.connect("clicked", fileok)
-
-        self.filew.show()
 
     def del_var(self):
         print self.treeview.get_cursor()[0]
