@@ -20,7 +20,7 @@ class EvalFrame(gtk.Frame, Thread, keybinding.KeyBinding):
     def __init__(self, _locals = None):
         gtk.Frame.__init__(self)
         self.set_label("Evaluator")
-        
+
         # build a table to put all my stuffs
         self.table = gtk.Table(12, 16, True)
         self.table.show()
@@ -45,12 +45,16 @@ class EvalFrame(gtk.Frame, Thread, keybinding.KeyBinding):
             self.textbuffer.set_language(language)
             self.textbuffer.set_highlight_syntax(True)
 
+        #
         self.sw = gtk.ScrolledWindow()
+        self.sw.set_border_width(10)
         self.sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         self.sw.add(self.textview)
         self.sw.show()
         self.textview.show()
         self.table.attach(self.sw, 0, 10, 1, 8)
+
+        
 
         # add an entry for expressions
         self.textbuffer3 = gtksourceview2.Buffer()
@@ -58,6 +62,7 @@ class EvalFrame(gtk.Frame, Thread, keybinding.KeyBinding):
         self.textview3 = gtksourceview2.View(self.textbuffer3)
 
         self.sw3 = gtk.ScrolledWindow()
+        self.sw3.set_border_width(10)
         self.sw3.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         self.sw3.add(self.textview3)
         self.sw3.show()
@@ -70,10 +75,10 @@ class EvalFrame(gtk.Frame, Thread, keybinding.KeyBinding):
             self.textbuffer.set_text(txt)
         except:
             None
-                
 
         # build the result textview
         self.sw2 = gtk.ScrolledWindow()
+        self.sw2.set_border_width(10)
         self.sw2.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         self.textview2 = gtk.TextView()
         self.textview2.set_editable(False)
