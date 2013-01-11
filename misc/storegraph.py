@@ -129,7 +129,7 @@ class Storegraph:
                 st = LogStore(self, key)
                 value = eval(self.formulas[key], self._globals, st)
                 # everything is fine, we update the value
-                print "used := " + str(st.used)
+                #print "used := " + str(st.used)
 
                 for i in st.used:
                     if not isinstance(self.values[i], PhantomStore):
@@ -364,7 +364,7 @@ class Storegraph:
     def store_eval(self, cmd):
         st = LogStore(self)
         value = eval(cmd, globals(), st) 
-        print "used = " + str(st.used)
+        #print "used = " + str(st.used)
         return value
 
     # add a calllback
