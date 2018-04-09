@@ -120,7 +120,7 @@ module L = struct
     let pb = build_parserbuffer lines in
     let es = (
       try
-	many1 Lisp.parse_expr pb 
+	[ Lisp.parse_expr pb ]
       with
 	| NoMatch -> 	  
 	  raise (Lisp.LispException (Lisp.StringError (markerror pb)))
