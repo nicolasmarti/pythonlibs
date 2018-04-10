@@ -23,6 +23,10 @@ module PyLang =
      def __init__(self, o):
          self.o=o
 
+     @staticmethod
+     def create(o):
+         return Value";L.name;"(o)
+
      # decref the term registered by id
      def __del__(self):
          try:
@@ -38,13 +42,11 @@ module PyLang =
      def __call__(self, *args):
          return ";L.name;".apply(self.o, args)
 
-def createValue";L.name;"(o):
-    return Value";L.name;"(o)
 "])
 
     (* grab the pyobjects *)
     let value_class = python_eval (String.concat "" ["Value"; L.name]);;
-    let createValue_function = python_eval (String.concat "" ["createValue"; L.name]);;
+    let createValue_function = python_eval (String.concat "" ["Value"; L.name;".create"]);;
     
 
     (* the wrapping *)

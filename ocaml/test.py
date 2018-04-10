@@ -75,7 +75,8 @@ for x in range(0, 100):
         Lisp.definition( d )
 
     print [ y for y in dir(Lisp) if not y in initial_methods ]
-        
+    print Lisp.add1( 9 )
+    
     for d in definitions:
         Lisp.undo_definition()
 
