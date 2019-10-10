@@ -14,14 +14,14 @@ def f1():
     return "%s + %s = %s" % tuple( tup )
 
 def f2():
-    a = random.randint(1, 99)
-    b = random.randint(1, 9)
+    a = random.randint(2, 99)
+    b = random.randint(2, 9)
     c = a * b
 
     while c > 100:
 
-        a = random.randint(1, 99)
-        b = random.randint(1, 9)
+        a = random.randint(2, 99)
+        b = random.randint(2, 9)
         c = a * b
 
     tup = map( lambda x: str(x), [a, b, c] )
